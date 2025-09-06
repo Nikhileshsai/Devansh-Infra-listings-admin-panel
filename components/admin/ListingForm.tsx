@@ -5,6 +5,11 @@ import { supabase } from '../../services/supabase';
 import { ListingFormData, PropertyType, Amenity } from '../../types';
 import { PROPERTY_TYPES, AMENITIES_BY_TYPE } from '../../constants';
 
+interface CustomDetail {
+  key: string;
+  value: string;
+}
+
 const initialFormData: ListingFormData = {
   type: 'plot',
   location: '',
@@ -24,6 +29,7 @@ const initialFormData: ListingFormData = {
 
 const ListingForm: React.FC = () => {
   const [formData, setFormData] = useState<ListingFormData>(initialFormData);
+  const [customDetails, setCustomDetails] = useState<CustomDetail[]>([]);
   const [loading, setLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [originalImageUrls, setOriginalImageUrls] = useState<string[]>([]);
@@ -54,10 +60,6 @@ const ListingForm: React.FC = () => {
                 return;
             }
 
-            // Explicitly check for errors on translations.
-            // We ignore the 'PGRST116' error code, which just means "no rows found",
-            // as that is an expected case (a listing might not have a translation yet).
-            // Any other error (e.g., RLS violation) is a real problem we should report.
             if (enTranslationRes.error && enTranslationRes.error.code !== 'PGRST116') {
                 alert('Error fetching English translation: ' + enTranslationRes.error.message);
             }
@@ -65,11 +67,29 @@ const ListingForm: React.FC = () => {
                 alert('Error fetching Telugu translation: ' + teTranslationRes.error.message);
             }
 
-            // Translations can be null if they don't exist, which is not an error
             const enTranslation = enTranslationRes.data;
             const teTranslation = teTranslationRes.data;
             
-            const details = listingData.details || { amenities: [] };
+            // Separate standard fields from custom fields in the 'details' JSONB
+            const standardKeys = new Set([
+                'area_sq_yards', 'plot_number', 'road_facing', 'survey_no', 'gated_community',
+                'amenities', 'investment_features', 'connectivity', 'brochure_url', 'bhk', 'floor',
+                'total_floors', 'sq_ft', 'car_parking', 'furnishing', 'private_pool',
+                'property_type', 'acres', 'water_source'
+            ]);
+
+            const fetchedDetails = listingData.details || {};
+            const standardDetails: any = { amenities: [] }; // Start with a clean slate
+            const loadedCustomDetails: CustomDetail[] = [];
+
+            for (const key in fetchedDetails) {
+                if (standardKeys.has(key)) {
+                    standardDetails[key] = fetchedDetails[key];
+                } else {
+                    const value = fetchedDetails[key];
+                    loadedCustomDetails.push({ key, value: value !== null && value !== undefined ? String(value) : '' });
+                }
+            }
 
             setFormData({
                 id: listingData.id,
@@ -79,14 +99,15 @@ const ListingForm: React.FC = () => {
                 image_urls: listingData.image_urls || [],
                 new_images: [],
                 map_embed: listingData.map_embed || '',
-                details,
+                details: standardDetails,
                 en_title: enTranslation?.title || '',
                 en_description: enTranslation?.description || '',
                 te_title: teTranslation?.title || '',
                 te_description: teTranslation?.description || '',
             });
+            setCustomDetails(loadedCustomDetails);
             setOriginalImageUrls(listingData.image_urls || []);
-            setOriginalBrochureUrl(details.brochure_url || '');
+            setOriginalBrochureUrl(standardDetails.brochure_url || '');
             setLoading(false);
         };
         fetchListing();
@@ -101,6 +122,7 @@ const ListingForm: React.FC = () => {
         type: value as PropertyType,
         details: { amenities: [], brochure_url: '' } // Reset details and amenities on type change
       }));
+      setCustomDetails([]); // Also reset custom details
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -109,7 +131,6 @@ const ListingForm: React.FC = () => {
   const handleDetailsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const isCheckbox = type === 'checkbox';
-    // Cannot rely on `e.target.checked` for checkboxes as it might not exist on all element types
     const checked = (e.target as HTMLInputElement).checked;
     
     const val = isCheckbox ? checked : value;
@@ -136,6 +157,20 @@ const ListingForm: React.FC = () => {
         }
       };
     });
+  };
+
+  const handleAddCustomDetail = () => {
+    setCustomDetails(prev => [...prev, { key: '', value: '' }]);
+  };
+
+  const handleCustomDetailChange = (index: number, field: 'key' | 'value', value: string) => {
+    const newCustomDetails = [...customDetails];
+    newCustomDetails[index][field] = value;
+    setCustomDetails(newCustomDetails);
+  };
+
+  const handleRemoveCustomDetail = (index: number) => {
+    setCustomDetails(prev => prev.filter((_, i) => i !== index));
   };
   
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,6 +229,15 @@ const ListingForm: React.FC = () => {
         }
       }
     }
+    
+    // Merge custom details, converting keys to snake_case
+    customDetails.forEach(detail => {
+        const key = detail.key.trim().replace(/\s+/g, '_').toLowerCase();
+        if (key) { // Only add if key is not empty
+            details[key] = detail.value;
+        }
+    });
+
     return details;
   };
 
@@ -482,6 +526,53 @@ const ListingForm: React.FC = () => {
             />
           </div>
         </div>
+
+        {/* Custom Details Section */}
+        <div className="md:col-span-2 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between items-center mb-3">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200">Custom Details</h3>
+                <button
+                    type="button"
+                    onClick={handleAddCustomDetail}
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                >
+                    <span className="material-icons text-base mr-1 -ml-1">add_circle</span>
+                    Add New Custom Details
+                </button>
+            </div>
+            <div className="space-y-3">
+                {customDetails.map((detail, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                        <input
+                            name={`custom_key_${index}`}
+                            placeholder="Key (e.g., Facing Direction)"
+                            value={detail.key}
+                            onChange={(e) => handleCustomDetailChange(index, 'key', e.target.value)}
+                            className={`${commonInputClass} flex-1`}
+                        />
+                        <input
+                            name={`custom_value_${index}`}
+                            placeholder="Value (e.g., North-East)"
+                            value={detail.value}
+                            onChange={(e) => handleCustomDetailChange(index, 'value', e.target.value)}
+                            className={`${commonInputClass} flex-1`}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => handleRemoveCustomDetail(index)}
+                            className="p-2 text-red-600 rounded-md hover:bg-red-100 dark:text-red-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-800"
+                            aria-label="Remove custom detail"
+                        >
+                            <span className="material-icons text-base">remove_circle_outline</span>
+                        </button>
+                    </div>
+                ))}
+                {customDetails.length === 0 && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">No custom details added. Click 'Add' to include more information.</p>
+                )}
+            </div>
+        </div>
+
 
         {/* Amenity Selector */}
         {availableAmenities && (
