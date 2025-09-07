@@ -75,7 +75,7 @@ const ListingForm: React.FC = () => {
                 'area_sq_yards', 'plot_number', 'road_facing', 'survey_no', 'gated_community',
                 'amenities', 'investment_features', 'connectivity', 'brochure_url', 'bhk', 'floor',
                 'total_floors', 'sq_ft', 'car_parking', 'furnishing', 'private_pool',
-                'property_type', 'acres', 'water_source'
+                'property_type', 'acres', 'water_source', 'area'
             ]);
 
             const fetchedDetails = listingData.details || {};
@@ -501,6 +501,27 @@ const ListingForm: React.FC = () => {
                             id="investment_features_agri"
                             name="investment_features"
                             placeholder="e.g., 5 acres for 50 lacs, 10 acres for 90 lacs"
+                            value={formData.details.investment_features || ''}
+                            onChange={handleDetailsChange}
+                            className={commonInputClass}
+                            rows={3}
+                        />
+                    </div>
+                  </>
+                );
+              case 'others':
+                return (
+                  <>
+                    <div className="md:col-span-2">
+                        <label htmlFor="area_others" className={`block mb-1 ${commonLabelClass}`}>Area</label>
+                        <input id="area_others" name="area" placeholder="e.g., 1200 sq.ft., 2 acres" value={formData.details.area || ''} onChange={handleDetailsChange} className={commonInputClass} required />
+                    </div>
+                     <div className="md:col-span-2">
+                        <label htmlFor="investment_features_others" className={`block mb-1 ${commonLabelClass}`}>Investment Features</label>
+                        <textarea
+                            id="investment_features_others"
+                            name="investment_features"
+                            placeholder="Describe investment benefits or pricing structure"
                             value={formData.details.investment_features || ''}
                             onChange={handleDetailsChange}
                             className={commonInputClass}

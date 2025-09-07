@@ -1,5 +1,5 @@
 
-export type PropertyType = 'plot' | 'flat' | 'villa' | 'commercial' | 'agricultural';
+export type PropertyType = 'plot' | 'flat' | 'villa' | 'commercial' | 'agricultural' | 'others';
 export type Language = 'en' | 'te';
 
 export interface Amenity {
@@ -53,7 +53,15 @@ export interface AgriculturalDetails {
   brochure_url?: string;
 }
 
-export type ListingDetails = PlotDetails | FlatDetails | VillaDetails | CommercialDetails | AgriculturalDetails;
+export interface OtherDetails {
+  area: string; // Flexible area field
+  amenities: Amenity[];
+  investment_features?: string;
+  connectivity?: string;
+  brochure_url?: string;
+}
+
+export type ListingDetails = PlotDetails | FlatDetails | VillaDetails | CommercialDetails | AgriculturalDetails | OtherDetails;
 
 export interface Listing {
   id: number;
