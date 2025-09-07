@@ -21,6 +21,8 @@ const initialFormData: ListingFormData = {
     amenities: [],
     brochure_url: '',
     youtube_embed_url: '',
+    note_en: '',
+    note_te: '',
   },
   en_title: '',
   en_description: '',
@@ -76,7 +78,7 @@ const ListingForm: React.FC = () => {
                 'area_sq_yards', 'plot_number', 'road_facing', 'survey_no', 'gated_community',
                 'amenities', 'investment_features', 'connectivity', 'brochure_url', 'bhk', 'floor',
                 'total_floors', 'sq_ft', 'car_parking', 'furnishing', 'private_pool',
-                'property_type', 'acres', 'water_source', 'area', 'youtube_embed_url'
+                'property_type', 'acres', 'water_source', 'area', 'youtube_embed_url', 'note_en', 'note_te'
             ]);
 
             const fetchedDetails = listingData.details || {};
@@ -130,7 +132,7 @@ const ListingForm: React.FC = () => {
       setFormData(prev => ({
         ...prev,
         type: value as PropertyType,
-        details: { amenities: [], brochure_url: '', youtube_embed_url: '' } // Reset details and amenities on type change
+        details: { amenities: [], brochure_url: '', youtube_embed_url: '', note_en: '', note_te: '' } // Reset details and amenities on type change
       }));
       setCustomDetails([]); // Also reset custom details
     } else {
@@ -678,6 +680,30 @@ const ListingForm: React.FC = () => {
         </div>
       </div>
       
+       {/* Admin Notes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={sectionContainerStyles}>
+            <h2 className={sectionTitleStyles}>Admin Note (English)</h2>
+            <textarea 
+                name="note_en" 
+                placeholder="Internal note for this property (English)..." 
+                value={formData.details.note_en || ''} 
+                onChange={handleDetailsChange} 
+                className={textAreaStyles} 
+            />
+        </div>
+        <div className={sectionContainerStyles}>
+            <h2 className={sectionTitleStyles}>Admin Note (Telugu)</h2>
+            <textarea 
+                name="note_te" 
+                placeholder="Internal note for this property (Telugu)..." 
+                value={formData.details.note_te || ''} 
+                onChange={handleDetailsChange} 
+                className={textAreaStyles} 
+            />
+        </div>
+      </div>
+
        {/* Map Embed URL */}
        <div>
         <label htmlFor="map_embed" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Map Embed URL</label>

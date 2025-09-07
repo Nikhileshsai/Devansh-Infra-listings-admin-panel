@@ -17,6 +17,8 @@ export interface PlotDetails {
   connectivity?: string;
   brochure_url?: string;
   youtube_embed_url?: string;
+  note_en?: string;
+  note_te?: string;
 }
 
 export interface FlatDetails {
@@ -30,11 +32,15 @@ export interface FlatDetails {
   connectivity?: string;
   brochure_url?: string;
   youtube_embed_url?: string;
+  note_en?: string;
+  note_te?: string;
 }
 
 export interface VillaDetails extends Omit<FlatDetails, 'floor' | 'total_floors'> {
   private_pool?: boolean;
   youtube_embed_url?: string;
+  note_en?: string;
+  note_te?: string;
 }
 
 export interface CommercialDetails {
@@ -45,6 +51,8 @@ export interface CommercialDetails {
   connectivity?: string;
   brochure_url?: string;
   youtube_embed_url?: string;
+  note_en?: string;
+  note_te?: string;
 }
 
 export interface AgriculturalDetails {
@@ -55,6 +63,8 @@ export interface AgriculturalDetails {
   connectivity?: string;
   brochure_url?: string;
   youtube_embed_url?: string;
+  note_en?: string;
+  note_te?: string;
 }
 
 export interface OtherDetails {
@@ -64,6 +74,8 @@ export interface OtherDetails {
   connectivity?: string;
   brochure_url?: string;
   youtube_embed_url?: string;
+  note_en?: string;
+  note_te?: string;
 }
 
 export type ListingDetails = PlotDetails | FlatDetails | VillaDetails | CommercialDetails | AgriculturalDetails | OtherDetails;
