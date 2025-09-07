@@ -148,3 +148,22 @@ export interface BlogFormData {
     te_description: string;
     te_translation_id?: number;
 }
+
+export interface FooterContent {
+    id?: number;
+    company_name: string;
+    hero_subtitle_en: string;
+    hero_subtitle_te: string;
+    contact_us_title_en: string;
+    contact_us_title_te: string;
+    phone_number: string;
+    email: string;
+    company_address: string;
+    follow_us_title_en: string;
+    follow_us_title_te: string;
+    instagram_url: string;
+    facebook_url: string;
+    youtube_url: string;
+    copyright_notice_en: string;
+    copyright_notice_te: string;
+}

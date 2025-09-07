@@ -10,6 +10,7 @@ import ListingsPage from './components/admin/ListingsPage';
 import BlogsPage from './components/admin/BlogsPage';
 import ListingForm from './components/admin/ListingForm';
 import BlogForm from './components/admin/BlogForm';
+import FooterContentPage from './components/admin/FooterContentPage';
 
 const App: React.FC = () => {
   const auth = useContext(AuthContext);
@@ -37,6 +38,7 @@ const App: React.FC = () => {
                   <Route path="/blogs" element={<BlogsPage />} />
                   <Route path="/blogs/new" element={<BlogForm />} />
                   <Route path="/blogs/edit/:id" element={<BlogForm />} />
+                  <Route path="/footer" element={<FooterContentPage />} />
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </AdminLayout>

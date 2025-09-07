@@ -49,6 +49,12 @@ const Sidebar: React.FC = () => {
                                 Blogs
                             </NavLink>
                         </li>
+                         <li className="relative px-6">
+                             <NavLink to="/footer" className={navLinkClasses}>
+                                <span className="material-icons mr-4" aria-hidden="true">info</span>
+                                Footer Content
+                            </NavLink>
+                        </li>
                     </ul>
                 </div>
                 
