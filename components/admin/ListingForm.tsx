@@ -20,6 +20,7 @@ const initialFormData: ListingFormData = {
   details: {
     amenities: [],
     brochure_url: '',
+    youtube_embed_url: '',
   },
   en_title: '',
   en_description: '',
@@ -75,7 +76,7 @@ const ListingForm: React.FC = () => {
                 'area_sq_yards', 'plot_number', 'road_facing', 'survey_no', 'gated_community',
                 'amenities', 'investment_features', 'connectivity', 'brochure_url', 'bhk', 'floor',
                 'total_floors', 'sq_ft', 'car_parking', 'furnishing', 'private_pool',
-                'property_type', 'acres', 'water_source', 'area'
+                'property_type', 'acres', 'water_source', 'area', 'youtube_embed_url'
             ]);
 
             const fetchedDetails = listingData.details || {};
@@ -116,11 +117,20 @@ const ListingForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    if (name === 'map_embed') {
+        // If the user pastes a full iframe, extract the src. Otherwise, use the value as is.
+        const match = value.match(/src="([^"]+)"/);
+        const url = match ? match[1] : value.trim();
+        setFormData(prev => ({ ...prev, map_embed: url }));
+        return;
+    }
+
     if (name === 'type') {
       setFormData(prev => ({
         ...prev,
         type: value as PropertyType,
-        details: { amenities: [], brochure_url: '' } // Reset details and amenities on type change
+        details: { amenities: [], brochure_url: '', youtube_embed_url: '' } // Reset details and amenities on type change
       }));
       setCustomDetails([]); // Also reset custom details
     } else {
@@ -668,12 +678,32 @@ const ListingForm: React.FC = () => {
         </div>
       </div>
       
-       {/* Map Embed */}
+       {/* Map Embed URL */}
        <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Map Embed Code</label>
-        <textarea name="map_embed" placeholder="<iframe src=...>" value={formData.map_embed} onChange={handleChange} className={`${inputStyles} h-24 font-mono text-sm`} />
+        <label htmlFor="map_embed" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Map Embed URL</label>
+        <input 
+            id="map_embed" 
+            name="map_embed" 
+            placeholder="Paste Google Maps URL or full <iframe> code" 
+            value={formData.map_embed} 
+            onChange={handleChange} 
+            className={`${inputStyles} font-mono text-sm`} 
+        />
       </div>
       
+      {/* YouTube Embed URL */}
+      <div>
+        <label htmlFor="youtube_embed_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">YouTube Video Embed URL</label>
+        <input 
+            id="youtube_embed_url"
+            name="youtube_embed_url" 
+            placeholder="https://www.youtube.com/embed/VIDEO_ID" 
+            value={formData.details.youtube_embed_url || ''} 
+            onChange={handleDetailsChange} 
+            className={`${inputStyles} font-mono text-sm`} 
+        />
+      </div>
+
       {/* Brochure Uploader */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Brochure / Document</label>
