@@ -35,6 +35,14 @@ const safety = {
   fire: { name: 'Fire Safety', icon: 'fire_extinguisher' },
 };
 
+// Create a unified set of amenities for residential properties like flats and villas
+const residentialAmenities = {
+  facilities: [facilities.clubhouse, facilities.pool, facilities.gym, facilities.power, facilities.parking, facilities.lift, facilities.water],
+  recreation: [recreation.playground, recreation.garden, recreation.kidsArea, recreation.track],
+  safety: [safety.security, safety.cctv, safety.gated, safety.fire],
+};
+
+
 // Define amenities tailored for each property type
 export const AMENITIES_BY_TYPE: Partial<Record<PropertyType, Record<string, Amenity[]>>> = {
   plot: {
@@ -42,16 +50,8 @@ export const AMENITIES_BY_TYPE: Partial<Record<PropertyType, Record<string, Amen
     recreation: [recreation.playground, recreation.track],
     safety: [safety.gated, safety.security],
   },
-  flat: {
-    facilities: [facilities.clubhouse, facilities.pool, facilities.gym, facilities.power, facilities.parking, facilities.lift, facilities.water],
-    recreation: [recreation.garden, recreation.kidsArea, recreation.track],
-    safety: [safety.security, safety.cctv, safety.fire],
-  },
-  villa: {
-    facilities: [facilities.clubhouse, facilities.pool, facilities.gym, facilities.power, facilities.parking, facilities.water],
-    recreation: [recreation.garden, recreation.kidsArea, recreation.track, recreation.playground],
-    safety: [safety.security, safety.cctv, safety.gated, safety.fire],
-  },
+  flat: residentialAmenities,
+  villa: residentialAmenities,
   commercial: {
     facilities: [facilities.power, facilities.parking, facilities.lift, facilities.water],
     safety: [safety.security, safety.cctv, safety.fire],
