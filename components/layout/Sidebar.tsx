@@ -38,6 +38,12 @@ const Sidebar: React.FC = () => {
                             </NavLink>
                         </li>
                         <li className="relative px-6">
+                            <NavLink to="/hero" className={navLinkClasses}>
+                                <span className="material-icons mr-4" aria-hidden="true">view_carousel</span>
+                                Hero Content
+                            </NavLink>
+                        </li>
+                        <li className="relative px-6">
                             <NavLink to="/listings" className={navLinkClasses}>
                                 <span className="material-icons mr-4" aria-hidden="true">business</span>
                                 Listings

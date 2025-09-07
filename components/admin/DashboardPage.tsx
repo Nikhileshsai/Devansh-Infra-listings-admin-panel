@@ -8,7 +8,7 @@ const DashboardPage: React.FC = () => {
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Dashboard</h1>
       <p className="mt-2 text-gray-600 dark:text-gray-300">Welcome to the Devansh Infra Admin Panel.</p>
 
-      <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2">
         <Card
           title="Manage Listings"
           description="Add, edit, and manage all property listings."
@@ -20,6 +20,18 @@ const DashboardPage: React.FC = () => {
           description="Create and update blog posts for your audience."
           link="/blogs"
           icon="article"
+        />
+        <Card
+          title="Manage Hero Content"
+          description="Update the main hero section of the homepage."
+          link="/hero"
+          icon="view_carousel"
+        />
+        <Card
+          title="Manage Footer Content"
+          description="Edit contact details, social links, and copyrights."
+          link="/footer"
+          icon="info"
         />
       </div>
     </div>

@@ -167,3 +167,12 @@ export interface FooterContent {
     copyright_notice_en: string;
     copyright_notice_te: string;
 }
+
+export interface HeroContent {
+    id?: number;
+    background_image_url: string;
+    hero_title_en: string;
+    hero_title_te: string;
+    hero_subtitle_en: string;
+    hero_subtitle_te: string;
+}
