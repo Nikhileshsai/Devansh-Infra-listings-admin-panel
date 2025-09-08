@@ -33,6 +33,12 @@ const DashboardPage: React.FC = () => {
           link="/footer"
           icon="info"
         />
+        <Card
+          title="Deploy Website"
+          description="Push all saved changes to the live website."
+          link="/deployment"
+          icon="cloud_upload"
+        />
       </div>
     </div>
   );

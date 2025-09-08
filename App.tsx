@@ -12,6 +12,7 @@ import ListingForm from './components/admin/ListingForm';
 import BlogForm from './components/admin/BlogForm';
 import FooterContentPage from './components/admin/FooterContentPage';
 import HeroContentPage from './components/admin/HeroContentPage';
+import DeploymentPage from './components/admin/DeploymentPage';
 
 const App: React.FC = () => {
   const auth = useContext(AuthContext);
@@ -41,6 +42,7 @@ const App: React.FC = () => {
                   <Route path="/blogs/new" element={<BlogForm />} />
                   <Route path="/blogs/edit/:id" element={<BlogForm />} />
                   <Route path="/footer" element={<FooterContentPage />} />
+                  <Route path="/deployment" element={<DeploymentPage />} />
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </AdminLayout>

@@ -61,6 +61,12 @@ const Sidebar: React.FC = () => {
                                 Footer Content
                             </NavLink>
                         </li>
+                         <li className="relative px-6">
+                             <NavLink to="/deployment" className={navLinkClasses}>
+                                <span className="material-icons mr-4" aria-hidden="true">cloud_upload</span>
+                                Deployment
+                            </NavLink>
+                        </li>
                     </ul>
                 </div>
                 
