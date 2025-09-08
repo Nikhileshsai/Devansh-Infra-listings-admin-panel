@@ -38,6 +38,8 @@ const ListingForm: React.FC = () => {
   const [originalImageUrls, setOriginalImageUrls] = useState<string[]>([]);
   const [newBrochure, setNewBrochure] = useState<File | null>(null);
   const [originalBrochureUrl, setOriginalBrochureUrl] = useState<string>('');
+  const [customAmenities, setCustomAmenities] = useState<Amenity[]>([]);
+  const [newAmenityName, setNewAmenityName] = useState<string>('');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
@@ -93,6 +95,22 @@ const ListingForm: React.FC = () => {
                     loadedCustomDetails.push({ key, value: value !== null && value !== undefined ? String(value) : '' });
                 }
             }
+            
+            // Separate amenities into predefined and custom
+            const allPredefinedAmenities = Object.values(AMENITIES_BY_TYPE[listingData.type] || {})
+                .flat()
+                // FIX: Add explicit type `Amenity` to parameter `a` to prevent it from being inferred as `unknown`.
+                .map((a: Amenity) => a.name);
+            const predefinedAmenitySet = new Set(allPredefinedAmenities);
+            const loadedCustomAmenities: Amenity[] = [];
+            const savedAmenities: Amenity[] = fetchedDetails.amenities || [];
+
+            savedAmenities.forEach(amenity => {
+                if (!predefinedAmenitySet.has(amenity.name)) {
+                    loadedCustomAmenities.push({ ...amenity, icon: amenity.icon || 'star' });
+                }
+            });
+            setCustomAmenities(loadedCustomAmenities);
 
             setFormData({
                 id: listingData.id,
@@ -102,7 +120,7 @@ const ListingForm: React.FC = () => {
                 image_urls: listingData.image_urls || [],
                 new_images: [],
                 map_embed: listingData.map_embed || '',
-                details: standardDetails,
+                details: { ...standardDetails, amenities: savedAmenities },
                 en_title: enTranslation?.title || '',
                 en_description: enTranslation?.description || '',
                 te_title: teTranslation?.title || '',
@@ -135,6 +153,7 @@ const ListingForm: React.FC = () => {
         details: { amenities: [], brochure_url: '', youtube_embed_url: '', note_en: '', note_te: '' } // Reset details and amenities on type change
       }));
       setCustomDetails([]); // Also reset custom details
+      setCustomAmenities([]); // Also reset custom amenities
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -169,6 +188,32 @@ const ListingForm: React.FC = () => {
         }
       };
     });
+  };
+  
+  const handleAddAmenity = () => {
+    const trimmedName = newAmenityName.trim();
+    if (trimmedName) {
+        const newAmenity: Amenity = { name: trimmedName, icon: 'star' };
+
+        const allPredefinedAmenities = Object.values(AMENITIES_BY_TYPE[formData.type] || {}).flat();
+        const isPredefined = allPredefinedAmenities.some(a => a.name.toLowerCase() === trimmedName.toLowerCase());
+
+        const isAlreadyCustom = customAmenities.some(a => a.name.toLowerCase() === trimmedName.toLowerCase());
+
+        if (isPredefined) {
+            alert(`'${trimmedName}' is already a predefined amenity.`);
+            return;
+        }
+
+        if (isAlreadyCustom) {
+            alert(`'${trimmedName}' has already been added as a custom amenity.`);
+            return;
+        }
+
+        setCustomAmenities(prev => [...prev, newAmenity]);
+        handleAmenityToggle(newAmenity); // This will also select it
+        setNewAmenityName('');
+    }
   };
 
   const handleAddCustomDetail = () => {
@@ -608,10 +653,31 @@ const ListingForm: React.FC = () => {
 
 
         {/* Amenity Selector */}
-        {availableAmenities && (
+        {(availableAmenities || customAmenities.length > 0) && (
             <div className="col-span-1 md:col-span-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Amenities</h3>
-                {Object.entries(availableAmenities).map(([category, amenities]) => (
+
+                 {/* Add Custom Amenity UI */}
+                <div className="flex items-center gap-2 mb-4 p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-md">
+                    <input 
+                        type="text"
+                        placeholder="Enter new amenity name..."
+                        value={newAmenityName}
+                        onChange={(e) => setNewAmenityName(e.target.value)}
+                        className={`${commonInputClass} flex-grow`}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddAmenity(); }}}
+                    />
+                    <button
+                        type="button"
+                        onClick={handleAddAmenity}
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                    >
+                        <span className="material-icons text-base mr-1 -ml-1">add</span>
+                        Add
+                    </button>
+                </div>
+
+                {availableAmenities && Object.entries(availableAmenities).map(([category, amenities]) => (
                     <div key={category} className="mb-4">
                         <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-400 capitalize mb-2">{category}</h4>
                         <div className="flex flex-wrap gap-2">
@@ -636,6 +702,31 @@ const ListingForm: React.FC = () => {
                         </div>
                     </div>
                 ))}
+                {customAmenities.length > 0 && (
+                    <div className="mt-4">
+                        <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Custom Amenities</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {customAmenities.map(amenity => {
+                                const isSelected = formData.details.amenities?.some((a: any) => a.name === amenity.name);
+                                return (
+                                    <button
+                                        type="button"
+                                        key={amenity.name}
+                                        onClick={() => handleAmenityToggle(amenity)}
+                                        className={`flex items-center gap-2 px-3 py-1.5 border rounded-full text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                                            isSelected
+                                                ? 'bg-indigo-600 text-white border-indigo-600'
+                                                : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:border-gray-600'
+                                        }`}
+                                    >
+                                        <span className="material-icons text-base">{amenity.icon}</span>
+                                        <span>{amenity.name}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
         )}
       </>
