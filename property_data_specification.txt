@@ -1,0 +1,119 @@
+Comprehensive Property Data Specification
+=======================================
+
+This document outlines all data fields for the real estate listing platform. It's divided into three main parts:
+1. Core Listing Information: Fields that are required for *every* property, regardless of type.
+2. Common Property Details: Fields that are available for *most* property types.
+3. Type-Specific Details: Fields that are unique to each individual property type.
+
+---
+
+### 1. Core Listing Information (Required for All Properties)
+
+These are the foundational details for any listing.
+
+| Field Name          | Technical Name      | Description                                                          | Data Type     | Requirement      | Example                          |
+|---------------------|---------------------|----------------------------------------------------------------------|---------------|------------------|----------------------------------|
+| Property Type       | `type`              | The category of the property. Changes the available fields below.    | Dropdown      | **Required**     | `Plot / Land`                    |
+| Location            | `location`          | The primary location, area, or city of the property.                 | Text          | **Required**     | `Gachibowli, Hyderabad`          |
+| Price               | `price`             | The total listing price of the property in Indian Rupees.            | Number        | **Required**     | `5000000`                        |
+| Title (English)     | `en_title`          | The main headline for the listing in English.                        | Text          | **Required**     | `Premium Villa Plots Near ORR`   |
+| Property Images     | `image_urls`        | A collection of images showcasing the property.                      | File Upload   | **Required**     | `[image1.jpg, image2.jpg]`       |
+| Title (Telugu)      | `te_title`          | The main headline for the listing in Telugu.                         | Text          | Optional         | `ORR దగ్గర ప్రీమియం విల్లా ప్లాట్లు`  |
+| Description (English) | `en_description`  | A detailed description of the property in English.                   | Text Area     | Optional         | `A beautifully landscaped community...` |
+| Description (Telugu)| `te_description`    | A detailed description of the property in Telugu.                    | Text Area     | Optional         | `ఒక అందమైన ప్రకృతి దృశ్యాలు...`  |
+| Map Embed URL       | `map_embed`         | A Google Maps URL or embed code to show the property's location.     | Text          | Optional         | `https://www.google.com/maps/embed?...` |
+
+---
+
+### 2. Common Property Details (Available for Most Property Types)
+
+These fields provide richer context and are available for most residential, commercial, and plot-based listings.
+
+| Field Name           | Technical Name         | Description                                                          | Data Type        | Requirement |
+|----------------------|------------------------|----------------------------------------------------------------------|------------------|-------------|
+| Amenities            | `amenities`            | A list of facilities available (e.g., Swimming Pool, Gym).         | Toggles          | Optional    |
+| Connectivity         | `connectivity`         | Highlights nearby landmarks and travel times.                        | Text Area        | Optional    |
+| Brochure / Document  | `brochure_url`         | A PDF or Word document with detailed information.                    | File Upload      | Optional    |
+| YouTube Video URL    | `youtube_embed_url`    | A link to a YouTube video tour of the property.                      | Text             | Optional    |
+| Admin Note (English) | `note_en`              | An internal note, visible only in the admin panel.                   | Text Area        | Optional    |
+| Admin Note (Telugu)  | `note_te`              | An internal note in Telugu.                                          | Text Area        | Optional    |
+| Custom Details       | *Dynamic*              | A flexible section to add any extra key-value information.           | Key-Value Pairs  | Optional    |
+
+---
+
+### 3. Type-Specific Details
+
+This section breaks down the unique fields that appear after you select a **Property Type**.
+
+**A. Plot / Land Details**
+---------------------------
+| Field Name           | Technical Name          | Description                                         | Data Type | Requirement  | Example                    |
+|----------------------|-------------------------|-----------------------------------------------------|-----------|--------------|----------------------------|
+| Plot Area            | `plot_area_sq_yards`    | The total area of the plot in square yards.         | Number    | **Required** | `200`                      |
+| Listed By            | `listed_by`             | Who is listing the property.                        | Dropdown  | Optional     | `Builder`                  |
+| Length (ft)          | `length_ft`             | The length dimension of the plot in feet.           | Number    | Optional     | `50`                       |
+| Breadth (ft)         | `breadth_ft`            | The breadth dimension of the plot in feet.          | Number    | Optional     | `36`                       |
+| Facing               | `facing`                | The direction the plot faces (e.g., East).          | Text      | Optional     | `East`                     |
+| Survey Number        | `survey_no`             | The official land survey number.                    | Text      | Optional     | `123/A`                    |
+| Gated Community      | `gated_community`       | Indicates if the plot is in a gated community.      | Checkbox  | Optional     | `Checked`                  |
+| Investment Features  | `investment_features`   | Pricing structure or special investment highlights. | Text Area | Optional     | `250 sq-yards for 10 lacs` |
+
+**B. Flat / House Details**
+---------------------------
+| Field Name           | Technical Name                 | Description                                       | Data Type | Requirement  | Example            |
+|----------------------|--------------------------------|---------------------------------------------------|-----------|--------------|--------------------|
+| Super Built up area  | `super_built_up_area_sqft`     | Total area including common spaces, in sqft.      | Number    | **Required** | `1250`             |
+| BHK                  | `bhk`                          | Number of Bedrooms, Hall, and Kitchen.            | Number    | **Required** | `3`                |
+| Construction Status  | `construction_status`          | Current stage of construction.                    | Dropdown  | Optional     | `Ready to Move`    |
+| Listed By            | `listed_by`                    | Who is listing the property.                      | Dropdown  | Optional     | `Owner`            |
+| Furnishing           | `furnishing`                   | The level of furnishing provided.                 | Dropdown  | Optional     | `Semi-Furnished`   |
+| Carpet area          | `carpet_area_sqft`             | The usable area within the walls, in sqft.        | Number    | Optional     | `950`              |
+| UDS                  | `uds`                          | Undivided Share of land in square yards.          | Text      | Optional     | `50 sq. yards`     |
+| Bath Rooms           | `bath_rooms`                   | The number of bathrooms.                          | Number    | Optional     | `2`                |
+| Car parking          | `car_parking`                  | The number of car parking slots available.        | Number    | Optional     | `1`                |
+| Floor No             | `floor_no`                     | The floor the property is on.                     | Number    | Optional     | `5`                |
+| Total Floors         | `total_floors`                 | Total number of floors in the building/house.     | Number    | Optional     | `10`               |
+| Facing               | `facing`                       | The direction the main entrance faces.            | Text      | Optional     | `North-East`       |
+| Property Age (Years) | `age_of_property_years`        | How old the property is in years.                 | Number    | Optional     | `2`                |
+| Maintenance          | `maintenance`                  | The monthly maintenance fee.                      | Number    | Optional     | `2500`             |
+
+**C. Villa Details**
+---------------------------
+*Villas share most fields with Flats/Houses but do not have `UDS` or `Maintenance` fields.*
+| Field Name           | Technical Name                 | Description                                       | Data Type | Requirement  | Example     |
+|----------------------|--------------------------------|---------------------------------------------------|-----------|--------------|-------------|
+| Super Built up area  | `super_built_up_area_sqft`     | Total area of the villa in square feet.           | Number    | **Required** | `2200`      |
+| BHK                  | `bhk`                          | Number of Bedrooms, Hall, and Kitchen.            | Number    | **Required** | `4`         |
+| Private Pool         | `private_pool`                 | Indicates if the villa has a private swimming pool| Checkbox  | Optional     | `Checked`   |
+| *(All other fields are the same as Flat/House, excluding UDS and Maintenance)* | | | | | |
+
+**D. Commercial Details**
+---------------------------
+| Field Name           | Technical Name                 | Description                                       | Data Type | Requirement  | Example              |
+|----------------------|--------------------------------|---------------------------------------------------|-----------|--------------|----------------------|
+| Super Built up area  | `super_built_up_area_sqft`     | Total area in square feet.                        | Number    | **Required** | `2000`               |
+| Property Type        | `property_type`                | The type of commercial space.                     | Dropdown  | Optional     | `Office`             |
+| Construction Status  | `construction_status`          | Current stage of construction.                    | Dropdown  | Optional     | `Under Construction` |
+| Listed By            | `listed_by`                    | Who is listing the property.                      | Dropdown  | Optional     | `Agent`              |
+| Furnishing           | `furnishing`                   | The level of furnishing provided.                 | Dropdown  | Optional     | `None`               |
+| Carpet Area          | `carpet_area_sqft`             | The usable area in square feet.                   | Number    | Optional     | `1500`               |
+| Washrooms            | `washrooms`                    | The number of washrooms.                          | Number    | Optional     | `2`                  |
+| Car Parking          | `car_parking`                  | The number of car parking slots available.        | Number    | Optional     | `5`                  |
+| Maintenance          | `maintenance`                  | The monthly maintenance fee.                      | Number    | Optional     | `5000`               |
+
+**E. Agricultural Land Details**
+---------------------------
+| Field Name           | Technical Name          | Description                                         | Data Type | Requirement  | Example               |
+|----------------------|-------------------------|-----------------------------------------------------|-----------|--------------|-----------------------|
+| Acres                | `acres`                 | The total area of the land in acres.                | Number    | **Required** | `10`                  |
+| Survey Number        | `survey_no`             | The official land survey number.                    | Text      | Optional     | `250/B`               |
+| Water Source         | `water_source`          | The primary source of water for the land.           | Dropdown  | Optional     | `Borewell`            |
+| Investment Features  | `investment_features`   | Pricing structure or special investment highlights. | Text Area | Optional     | `5 acres for 50 lacs` |
+
+**F. Others Details**
+---------------------------
+| Field Name           | Technical Name          | Description                                         | Data Type | Requirement  | Example                      |
+|----------------------|-------------------------|-----------------------------------------------------|-----------|--------------|------------------------------|
+| Area                 | `area`                  | A flexible field to describe the size of the property| Text      | **Required** | `1200 sq.ft. Warehouse`      |
+| Investment Features  | `investment_features`   | Special investment highlights or pricing details.   | Text Area | Optional     | `Suitable for cold storage.` |
