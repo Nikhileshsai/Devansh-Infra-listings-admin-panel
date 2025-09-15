@@ -1,9 +1,10 @@
 import { PropertyType, Amenity } from './types';
 
 export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
-  { value: 'plot', label: 'Plot' },
+  { value: 'plot', label: 'Plot / Land' },
   { value: 'flat', label: 'Flat' },
   { value: 'villa', label: 'Villa' },
+  { value: 'house', label: 'House' },
   { value: 'commercial', label: 'Commercial' },
   { value: 'agricultural', label: 'Agricultural Land' },
   { value: 'others', label: 'Others' },
@@ -52,6 +53,7 @@ export const AMENITIES_BY_TYPE: Partial<Record<PropertyType, Record<string, Amen
   },
   flat: residentialAmenities,
   villa: residentialAmenities,
+  house: residentialAmenities,
   commercial: {
     facilities: [facilities.power, facilities.parking, facilities.lift, facilities.water],
     safety: [safety.security, safety.cctv, safety.fire],
@@ -63,6 +65,7 @@ const allAmenitiesSources = [
     AMENITIES_BY_TYPE.plot,
     AMENITIES_BY_TYPE.flat,
     AMENITIES_BY_TYPE.villa,
+    AMENITIES_BY_TYPE.house,
     AMENITIES_BY_TYPE.commercial,
 ].filter(Boolean) as Record<string, Amenity[]>[];
 

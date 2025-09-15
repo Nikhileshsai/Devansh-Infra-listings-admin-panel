@@ -1,4 +1,4 @@
-export type PropertyType = 'plot' | 'flat' | 'villa' | 'commercial' | 'agricultural' | 'others';
+export type PropertyType = 'plot' | 'flat' | 'villa' | 'house' | 'commercial' | 'agricultural' | 'others';
 export type Language = 'en' | 'te';
 
 export interface Amenity {
@@ -6,53 +6,70 @@ export interface Amenity {
   icon: string;
 }
 
-export interface PlotDetails {
-  area_sq_yards: number;
-  plot_number?: string;
-  road_facing?: string;
-  survey_no?: string;
-  gated_community?: boolean;
-  amenities: Amenity[];
-  investment_features?: string;
-  connectivity?: string;
-  brochure_url?: string;
-  youtube_embed_url?: string;
-  note_en?: string;
-  note_te?: string;
+// Base interfaces for common fields to reduce repetition
+interface BasePropertyDetails {
+    amenities: Amenity[];
+    connectivity?: string;
+    brochure_url?: string;
+    youtube_embed_url?: string;
+    note_en?: string;
+    note_te?: string;
 }
 
-export interface FlatDetails {
-  bhk: number;
-  floor: number;
-  total_floors: number;
-  sq_ft: number;
-  car_parking?: boolean;
-  furnishing?: 'Full' | 'Semi' | 'None';
-  amenities: Amenity[];
-  connectivity?: string;
-  brochure_url?: string;
-  youtube_embed_url?: string;
-  note_en?: string;
-  note_te?: string;
+interface BaseListedEntityDetails extends BasePropertyDetails {
+    construction_status?: 'Ready to Move' | 'Under Construction';
+    listed_by?: 'Owner' | 'Agent' | 'Builder';
 }
 
-export interface VillaDetails extends Omit<FlatDetails, 'floor' | 'total_floors'> {
-  private_pool?: boolean;
-  youtube_embed_url?: string;
-  note_en?: string;
-  note_te?: string;
+interface BaseResidentialDetails extends BaseListedEntityDetails {
+    bhk: number;
+    bath_rooms?: number;
+    furnishing?: 'Full' | 'Semi' | 'None';
+    super_built_up_area_sqft: number;
+    carpet_area_sqft?: number;
+    maintenance?: number;
+    car_parking?: number; // 0 for none, 1, 2, etc.
+    facing?: string;
+    uds?: string;
+    age_of_property_years?: number;
 }
 
-export interface CommercialDetails {
-  sq_ft: number;
-  property_type: 'Office' | 'Shop' | 'Showroom';
-  floor?: number;
-  amenities: Amenity[];
-  connectivity?: string;
-  brochure_url?: string;
-  youtube_embed_url?: string;
-  note_en?: string;
-  note_te?: string;
+
+// Specific property type details
+export interface HouseDetails extends BaseResidentialDetails {
+    total_floors?: number;
+    floor_no?: number;
+}
+
+export interface FlatDetails extends BaseResidentialDetails {
+    total_floors: number;
+    floor_no: number;
+}
+
+export interface VillaDetails extends BaseResidentialDetails {
+    private_pool?: boolean;
+    total_floors?: number; // A villa can have multiple floors
+}
+
+export interface CommercialDetails extends BaseListedEntityDetails {
+    property_type: 'Office' | 'Shop' | 'Showroom';
+    furnishing?: 'Full' | 'Semi' | 'None';
+    super_built_up_area_sqft: number;
+    carpet_area_sqft?: number;
+    maintenance?: number;
+    car_parking?: number;
+    washrooms?: number;
+}
+
+export interface PlotDetails extends BasePropertyDetails {
+    listed_by?: 'Owner' | 'Agent' | 'Builder';
+    plot_area_sq_yards: number;
+    length_ft?: number;
+    breadth_ft?: number;
+    facing?: string;
+    survey_no?: string;
+    gated_community?: boolean;
+    investment_features?: string;
 }
 
 export interface AgriculturalDetails {
@@ -78,7 +95,8 @@ export interface OtherDetails {
   note_te?: string;
 }
 
-export type ListingDetails = PlotDetails | FlatDetails | VillaDetails | CommercialDetails | AgriculturalDetails | OtherDetails;
+
+export type ListingDetails = PlotDetails | FlatDetails | VillaDetails | HouseDetails | CommercialDetails | AgriculturalDetails | OtherDetails;
 
 export interface Listing {
   id: number;

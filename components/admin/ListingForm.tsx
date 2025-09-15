@@ -77,10 +77,13 @@ const ListingForm: React.FC = () => {
             
             // Separate standard fields from custom fields in the 'details' JSONB
             const standardKeys = new Set([
-                'area_sq_yards', 'plot_number', 'road_facing', 'survey_no', 'gated_community',
-                'amenities', 'investment_features', 'connectivity', 'brochure_url', 'bhk', 'floor',
-                'total_floors', 'sq_ft', 'car_parking', 'furnishing', 'private_pool',
-                'property_type', 'acres', 'water_source', 'area', 'youtube_embed_url', 'note_en', 'note_te'
+                'bhk', 'bath_rooms', 'furnishing', 'construction_status', 'listed_by',
+                'super_built_up_area_sqft', 'carpet_area_sqft', 'maintenance',
+                'car_parking', 'facing', 'uds', 'age_of_property_years',
+                'total_floors', 'floor_no', 'private_pool', 'property_type', 'washrooms',
+                'plot_area_sq_yards', 'length_ft', 'breadth_ft', 'survey_no', 'gated_community',
+                'investment_features', 'amenities', 'connectivity', 'brochure_url', 'youtube_embed_url',
+                'note_en', 'note_te', 'acres', 'water_source', 'area'
             ]);
 
             const fetchedDetails = listingData.details || {};
@@ -268,10 +271,11 @@ const ListingForm: React.FC = () => {
   const getProcessedDetails = () => {
     const details = { ...formData.details };
     const numericFieldsMap: Partial<Record<PropertyType, string[]>> = {
-      plot: ['area_sq_yards'],
-      flat: ['bhk', 'floor', 'total_floors', 'sq_ft'],
-      villa: ['bhk', 'sq_ft'],
-      commercial: ['sq_ft', 'floor'],
+      plot: ['plot_area_sq_yards', 'length_ft', 'breadth_ft'],
+      flat: ['bhk', 'bath_rooms', 'super_built_up_area_sqft', 'carpet_area_sqft', 'maintenance', 'car_parking', 'age_of_property_years', 'total_floors', 'floor_no'],
+      villa: ['bhk', 'bath_rooms', 'super_built_up_area_sqft', 'carpet_area_sqft', 'maintenance', 'car_parking', 'age_of_property_years', 'total_floors'],
+      house: ['bhk', 'bath_rooms', 'super_built_up_area_sqft', 'carpet_area_sqft', 'maintenance', 'car_parking', 'age_of_property_years', 'total_floors', 'floor_no'],
+      commercial: ['super_built_up_area_sqft', 'carpet_area_sqft', 'maintenance', 'car_parking', 'washrooms'],
       agricultural: ['acres'],
     };
   
@@ -462,151 +466,264 @@ const ListingForm: React.FC = () => {
   const renderDetailsForm = () => {
     const commonInputClass = "w-full p-2 border rounded bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white";
     const commonCheckboxClass = "h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-offset-gray-800";
-    const commonLabelClass = "text-sm font-medium text-gray-700 dark:text-gray-300";
+    const commonLabelClass = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
     const availableAmenities = AMENITIES_BY_TYPE[formData.type];
     
+    const residentialFields = (type: 'flat' | 'villa' | 'house') => (
+        <>
+            <div>
+                <label htmlFor="construction_status" className={commonLabelClass}>Construction Status</label>
+                <select id="construction_status" name="construction_status" value={formData.details.construction_status || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                    <option value="">Select Status</option>
+                    <option value="Ready to Move">Ready to Move</option>
+                    <option value="Under Construction">Under Construction</option>
+                </select>
+            </div>
+             <div>
+                <label htmlFor="listed_by" className={commonLabelClass}>Listed By</label>
+                <select id="listed_by" name="listed_by" value={formData.details.listed_by || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                    <option value="">Select Lister</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Agent">Agent</option>
+                    <option value="Builder">Builder</option>
+                </select>
+            </div>
+            <div>
+                <label htmlFor="furnishing" className={commonLabelClass}>Furnishing</label>
+                <select id="furnishing" name="furnishing" value={formData.details.furnishing || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                    <option value="" disabled>Furnishing Status</option>
+                    <option value="None">None</option>
+                    <option value="Semi">Semi-Furnished</option>
+                    <option value="Full">Fully-Furnished</option>
+                </select>
+            </div>
+            
+            <div>
+                <label htmlFor="super_built_up_area_sqft" className={commonLabelClass}>Super Built up area (sqft)</label>
+                <input id="super_built_up_area_sqft" name="super_built_up_area_sqft" placeholder="e.g., 1200" value={formData.details.super_built_up_area_sqft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
+            </div>
+            <div>
+                <label htmlFor="carpet_area_sqft" className={commonLabelClass}>Carpet area (sqft)</label>
+                <input id="carpet_area_sqft" name="carpet_area_sqft" placeholder="e.g., 900" value={formData.details.carpet_area_sqft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+            </div>
+            {type !== 'villa' && 
+                <div>
+                    <label htmlFor="uds" className={commonLabelClass}>UDS</label>
+                    <input id="uds" name="uds" placeholder="e.g. 50 sq. yards" value={formData.details.uds || ''} onChange={handleDetailsChange} className={commonInputClass} />
+                </div>
+            }
+            
+            <div>
+                <label htmlFor="bhk" className={commonLabelClass}>BHK</label>
+                <input id="bhk" name="bhk" placeholder="e.g., 3" value={formData.details.bhk || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
+            </div>
+            <div>
+                <label htmlFor="bath_rooms" className={commonLabelClass}>Bath Rooms</label>
+                <input id="bath_rooms" name="bath_rooms" placeholder="e.g., 2" value={formData.details.bath_rooms || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+            </div>
+            <div>
+                <label htmlFor="car_parking" className={commonLabelClass}>Car parking</label>
+                <input id="car_parking" name="car_parking" placeholder="0 for none" value={formData.details.car_parking || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+            </div>
+
+            {type !== 'villa' && 
+                <div>
+                    <label htmlFor="floor_no" className={commonLabelClass}>Floor No</label>
+                    <input id="floor_no" name="floor_no" placeholder="e.g., 5" value={formData.details.floor_no || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                </div>
+            }
+            <div>
+                <label htmlFor="total_floors" className={commonLabelClass}>Total Floors</label>
+                <input id="total_floors" name="total_floors" placeholder="e.g., 10" value={formData.details.total_floors || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+            </div>
+            <div>
+                <label htmlFor="facing" className={commonLabelClass}>Facing</label>
+                <input id="facing" name="facing" placeholder="e.g., East" value={formData.details.facing || ''} onChange={handleDetailsChange} className={commonInputClass} />
+            </div>
+           
+            <div>
+                <label htmlFor="age_of_property_years" className={commonLabelClass}>Property Age (Years)</label>
+                <input id="age_of_property_years" placeholder="e.g., 2" value={formData.details.age_of_property_years || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+            </div>
+            {type !== 'villa' && 
+                <div>
+                    <label htmlFor="maintenance" className={commonLabelClass}>Maintenance (Monthly)</label>
+                    <input id="maintenance" name="maintenance" placeholder="e.g., 2500" value={formData.details.maintenance || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                </div>
+            }
+
+            {type === 'villa' && 
+                <div className="flex items-center gap-2 pt-6">
+                    <input id="private_pool" name="private_pool" checked={formData.details.private_pool || false} onChange={handleDetailsChange} type="checkbox" className={commonCheckboxClass} />
+                    <label htmlFor="private_pool" className="text-sm font-medium text-gray-700 dark:text-gray-300">Private Pool</label>
+                </div>
+            }
+        </>
+    );
+
     return (
       <>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6">
           {(() => {
             switch(formData.type) {
               case 'plot':
                 return (
                   <>
-                    <input name="area_sq_yards" placeholder="Area (Sq. Yards)" value={formData.details.area_sq_yards || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <input name="plot_number" placeholder="Plot Number" value={formData.details.plot_number || ''} onChange={handleDetailsChange} className={commonInputClass} />
-                    <input name="road_facing" placeholder="Road Facing (e.g., East)" value={formData.details.road_facing || ''} onChange={handleDetailsChange} className={commonInputClass} />
-                    <input name="survey_no" placeholder="Survey Number" value={formData.details.survey_no || ''} onChange={handleDetailsChange} className={commonInputClass} />
-                    <div className="flex items-center gap-2">
-                        <input id="gated_community" name="gated_community" checked={formData.details.gated_community || false} onChange={handleDetailsChange} type="checkbox" className={commonCheckboxClass} />
-                        <label htmlFor="gated_community" className={commonLabelClass}>Gated Community</label>
+                    <div>
+                        <label htmlFor="plot_area_sq_yards" className={commonLabelClass}>Plot Area (sq. yards)</label>
+                        <input id="plot_area_sq_yards" name="plot_area_sq_yards" placeholder="e.g., 200" value={formData.details.plot_area_sq_yards || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
+                        <label htmlFor="length_ft" className={commonLabelClass}>Length (ft)</label>
+                        <input id="length_ft" name="length_ft" placeholder="e.g., 50" value={formData.details.length_ft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number"/>
+                    </div>
+                    <div>
+                        <label htmlFor="breadth_ft" className={commonLabelClass}>Breadth (ft)</label>
+                        <input id="breadth_ft" name="breadth_ft" placeholder="e.g., 36" value={formData.details.breadth_ft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number"/>
+                    </div>
+                    <div>
+                        <label htmlFor="facing_plot" className={commonLabelClass}>Facing</label>
+                        <input id="facing_plot" name="facing" placeholder="e.g., East" value={formData.details.facing || ''} onChange={handleDetailsChange} className={commonInputClass} />
+                    </div>
+                    <div>
+                        <label htmlFor="listed_by_plot" className={commonLabelClass}>Listed By</label>
+                        <select id="listed_by_plot" name="listed_by" value={formData.details.listed_by || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                            <option value="">Select Lister</option>
+                            <option value="Owner">Owner</option>
+                            <option value="Agent">Agent</option>
+                            <option value="Builder">Builder</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="survey_no_plot" className={commonLabelClass}>Survey Number</label>
+                        <input id="survey_no_plot" name="survey_no" placeholder="e.g., 123/A" value={formData.details.survey_no || ''} onChange={handleDetailsChange} className={commonInputClass} />
+                    </div>
+                     <div className="flex items-center gap-2 pt-6">
+                        <input id="gated_community" name="gated_community" checked={formData.details.gated_community || false} onChange={handleDetailsChange} type="checkbox" className={commonCheckboxClass} />
+                        <label htmlFor="gated_community" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gated Community</label>
+                    </div>
+                    <div className="lg:col-span-3">
                         <label htmlFor="investment_features_plot" className={`block mb-1 ${commonLabelClass}`}>Investment Features</label>
-                        <textarea
-                            id="investment_features_plot"
-                            name="investment_features"
-                            placeholder="e.g., 250 sq-yards for 10 lacs, 300 sq-yards for 12 lacs"
-                            value={formData.details.investment_features || ''}
-                            onChange={handleDetailsChange}
-                            className={commonInputClass}
-                            rows={3}
-                        />
+                        <textarea id="investment_features_plot" name="investment_features" placeholder="e.g., 250 sq-yards for 10 lacs, 300 sq-yards for 12 lacs" value={formData.details.investment_features || ''} onChange={handleDetailsChange} className={commonInputClass} rows={3} />
                     </div>
                   </>
                 );
               case 'flat':
-                return (
-                  <>
-                    <input name="bhk" placeholder="BHK" value={formData.details.bhk || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <input name="floor" placeholder="Floor" value={formData.details.floor || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <input name="total_floors" placeholder="Total Floors" value={formData.details.total_floors || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <input name="sq_ft" placeholder="Area (Sq. Ft)" value={formData.details.sq_ft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <select name="furnishing" value={formData.details.furnishing || 'None'} onChange={handleDetailsChange} className={commonInputClass}>
-                        <option value="None">None</option>
-                        <option value="Semi">Semi-Furnished</option>
-                        <option value="Full">Fully-Furnished</option>
-                    </select>
-                    <div className="flex items-center gap-2">
-                        <input id="car_parking" name="car_parking" checked={formData.details.car_parking || false} onChange={handleDetailsChange} type="checkbox" className={commonCheckboxClass} />
-                        <label htmlFor="car_parking" className={commonLabelClass}>Car Parking Available</label>
-                    </div>
-                  </>
-                );
+                return residentialFields('flat');
               case 'villa':
-                return (
-                  <>
-                    <input name="bhk" placeholder="BHK" value={formData.details.bhk || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <input name="sq_ft" placeholder="Area (Sq. Ft)" value={formData.details.sq_ft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <select name="furnishing" value={formData.details.furnishing || 'None'} onChange={handleDetailsChange} className={commonInputClass}>
-                        <option value="None">None</option>
-                        <option value="Semi">Semi-Furnished</option>
-                        <option value="Full">Fully-Furnished</option>
-                    </select>
-                    <div className="flex items-center gap-2">
-                        <input id="private_pool" name="private_pool" checked={formData.details.private_pool || false} onChange={handleDetailsChange} type="checkbox" className={commonCheckboxClass} />
-                        <label htmlFor="private_pool" className={commonLabelClass}>Private Pool</label>
-                    </div>
-                  </>
-                );
+                return residentialFields('villa');
+              case 'house':
+                  return residentialFields('house');
               case 'commercial':
                 return (
                   <>
-                    <input name="sq_ft" placeholder="Area (Sq. Ft)" value={formData.details.sq_ft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <select name="property_type" value={formData.details.property_type || 'Office'} onChange={handleDetailsChange} className={commonInputClass}>
-                        <option value="Office">Office</option>
-                        <option value="Shop">Shop</option>
-                        <option value="Showroom">Showroom</option>
-                    </select>
-                    <input name="floor" placeholder="Floor" value={formData.details.floor || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                    <div>
+                        <label htmlFor="property_type_comm" className={commonLabelClass}>Property Type</label>
+                        <select id="property_type_comm" name="property_type" value={formData.details.property_type || 'Office'} onChange={handleDetailsChange} className={commonInputClass}>
+                            <option value="Office">Office</option>
+                            <option value="Shop">Shop</option>
+                            <option value="Showroom">Showroom</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="construction_status_comm" className={commonLabelClass}>Construction Status</label>
+                        <select id="construction_status_comm" name="construction_status" value={formData.details.construction_status || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                            <option value="">Select Status</option>
+                            <option value="Ready to Move">Ready to Move</option>
+                            <option value="Under Construction">Under Construction</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="listed_by_comm" className={commonLabelClass}>Listed By</label>
+                        <select id="listed_by_comm" name="listed_by" value={formData.details.listed_by || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                            <option value="">Select Lister</option>
+                            <option value="Owner">Owner</option>
+                            <option value="Agent">Agent</option>
+                            <option value="Builder">Builder</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="furnishing_comm" className={commonLabelClass}>Furnishing</label>
+                        <select id="furnishing_comm" name="furnishing" value={formData.details.furnishing || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                            <option value="" disabled>Furnishing Status</option>
+                            <option value="None">None</option>
+                            <option value="Semi">Semi-Furnished</option>
+                            <option value="Full">Fully-Furnished</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="super_built_up_area_sqft_comm" className={commonLabelClass}>Super Build up Area (sqft)</label>
+                        <input id="super_built_up_area_sqft_comm" name="super_built_up_area_sqft" placeholder="e.g., 2000" value={formData.details.super_built_up_area_sqft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
+                    </div>
+                    <div>
+                        <label htmlFor="carpet_area_sqft_comm" className={commonLabelClass}>Carpet Area (sqft)</label>
+                        <input id="carpet_area_sqft_comm" name="carpet_area_sqft" placeholder="e.g., 1500" value={formData.details.carpet_area_sqft || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                    </div>
+                    <div>
+                        <label htmlFor="washrooms_comm" className={commonLabelClass}>Washrooms</label>
+                        <input id="washrooms_comm" name="washrooms" placeholder="e.g., 2" value={formData.details.washrooms || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                    </div>
+                    <div>
+                        <label htmlFor="car_parking_comm" className={commonLabelClass}>Car Parking</label>
+                        <input id="car_parking_comm" name="car_parking" placeholder="0 for none" value={formData.details.car_parking || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                    </div>
+                    <div>
+                        <label htmlFor="maintenance_comm" className={commonLabelClass}>Maintenance (monthly)</label>
+                        <input id="maintenance_comm" name="maintenance" placeholder="e.g., 5000" value={formData.details.maintenance || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" />
+                    </div>
                   </>
                 );
               case 'agricultural':
                 return (
                   <>
-                    <input name="acres" placeholder="Acres" value={formData.details.acres || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
-                    <input name="survey_no" placeholder="Survey Number" value={formData.details.survey_no || ''} onChange={handleDetailsChange} className={commonInputClass} />
-                    <select name="water_source" value={formData.details.water_source || ''} onChange={handleDetailsChange} className={commonInputClass}>
-                        <option value="">Select Water Source</option>
-                        <option value="Borewell">Borewell</option>
-                        <option value="Canal">Canal</option>
-                        <option value="River">River</option>
-                    </select>
-                    <div className="md:col-span-2">
+                    <div>
+                        <label htmlFor="acres" className={commonLabelClass}>Acres</label>
+                        <input id="acres" name="acres" placeholder="e.g., 10" value={formData.details.acres || ''} onChange={handleDetailsChange} className={commonInputClass} type="number" required />
+                    </div>
+                    <div>
+                        <label htmlFor="survey_no_agri" className={commonLabelClass}>Survey Number</label>
+                        <input id="survey_no_agri" name="survey_no" placeholder="e.g., 250/B" value={formData.details.survey_no || ''} onChange={handleDetailsChange} className={commonInputClass} />
+                    </div>
+                    <div>
+                        <label htmlFor="water_source" className={commonLabelClass}>Water Source</label>
+                        <select id="water_source" name="water_source" value={formData.details.water_source || ''} onChange={handleDetailsChange} className={commonInputClass}>
+                            <option value="">Select Water Source</option>
+                            <option value="Borewell">Borewell</option>
+                            <option value="Canal">Canal</option>
+                            <option value="River">River</option>
+                        </select>
+                    </div>
+                    <div className="lg:col-span-3">
                         <label htmlFor="investment_features_agri" className={`block mb-1 ${commonLabelClass}`}>Investment Features</label>
-                        <textarea
-                            id="investment_features_agri"
-                            name="investment_features"
-                            placeholder="e.g., 5 acres for 50 lacs, 10 acres for 90 lacs"
-                            value={formData.details.investment_features || ''}
-                            onChange={handleDetailsChange}
-                            className={commonInputClass}
-                            rows={3}
-                        />
+                        <textarea id="investment_features_agri" name="investment_features" placeholder="e.g., 5 acres for 50 lacs, 10 acres for 90 lacs" value={formData.details.investment_features || ''} onChange={handleDetailsChange} className={commonInputClass} rows={3} />
                     </div>
                   </>
                 );
               case 'others':
                 return (
                   <>
-                    <div className="md:col-span-2">
+                    <div className="lg:col-span-3">
                         <label htmlFor="area_others" className={`block mb-1 ${commonLabelClass}`}>Area</label>
                         <input id="area_others" name="area" placeholder="e.g., 1200 sq.ft., 2 acres" value={formData.details.area || ''} onChange={handleDetailsChange} className={commonInputClass} required />
                     </div>
-                     <div className="md:col-span-2">
+                     <div className="lg:col-span-3">
                         <label htmlFor="investment_features_others" className={`block mb-1 ${commonLabelClass}`}>Investment Features</label>
-                        <textarea
-                            id="investment_features_others"
-                            name="investment_features"
-                            placeholder="Describe investment benefits or pricing structure"
-                            value={formData.details.investment_features || ''}
-                            onChange={handleDetailsChange}
-                            className={commonInputClass}
-                            rows={3}
-                        />
+                        <textarea id="investment_features_others" name="investment_features" placeholder="Describe investment benefits or pricing structure" value={formData.details.investment_features || ''} onChange={handleDetailsChange} className={commonInputClass} rows={3} />
                     </div>
                   </>
                 );
               default:
-                return <p className="text-gray-500 dark:text-gray-400 col-span-2">Select a property type to see its specific fields.</p>;
+                return <p className="text-gray-500 dark:text-gray-400 col-span-1 md:col-span-2 lg:col-span-3">Select a property type to see its specific fields.</p>;
             }
           })()}
-          <div className="md:col-span-2">
+          <div className="lg:col-span-3">
             <label htmlFor="connectivity" className={`block mb-1 ${commonLabelClass}`}>Connectivity</label>
-            <textarea
-                id="connectivity"
-                name="connectivity"
-                placeholder="e.g., 10 mins from ORR, 20 mins from Airport"
-                value={formData.details.connectivity || ''}
-                onChange={handleDetailsChange}
-                className={commonInputClass}
-                rows={3}
-            />
+            <textarea id="connectivity" name="connectivity" placeholder="e.g., 10 mins from ORR, 20 mins from Airport" value={formData.details.connectivity || ''} onChange={handleDetailsChange} className={commonInputClass} rows={3} />
           </div>
         </div>
 
         {/* Custom Details Section */}
-        <div className="md:col-span-2 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-3">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200">Custom Details</h3>
                 <button
@@ -654,7 +771,7 @@ const ListingForm: React.FC = () => {
 
         {/* Amenity Selector */}
         {(availableAmenities || customAmenities.length > 0) && (
-            <div className="col-span-1 md:col-span-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Amenities</h3>
 
                  {/* Add Custom Amenity UI */}
@@ -744,11 +861,20 @@ const ListingForm: React.FC = () => {
       
       {/* Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <select name="type" value={formData.type} onChange={handleChange} className={inputStyles}>
-          {PROPERTY_TYPES.map(pt => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
-        </select>
-        <input name="location" placeholder="Location" value={formData.location} onChange={handleChange} className={inputStyles} required />
-        <input name="price" placeholder="Price" value={formData.price} onChange={handleChange} className={inputStyles} type="number" required />
+        <div>
+            <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property Type</label>
+            <select id="type" name="type" value={formData.type} onChange={handleChange} className={inputStyles}>
+                {PROPERTY_TYPES.map(pt => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
+            </select>
+        </div>
+        <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+            <input id="location" name="location" placeholder="e.g., Gachibowli, Hyderabad" value={formData.location} onChange={handleChange} className={inputStyles} required />
+        </div>
+        <div>
+            <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
+            <input id="price" name="price" placeholder="e.g., 5000000" value={formData.price} onChange={handleChange} className={inputStyles} type="number" required />
+        </div>
       </div>
 
       {/* Dynamic Details */}
