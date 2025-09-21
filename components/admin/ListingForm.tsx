@@ -140,14 +140,6 @@ const ListingForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'map_embed') {
-        // If the user pastes a full iframe, extract the src. Otherwise, use the value as is.
-        const match = value.match(/src="([^"]+)"/);
-        const url = match ? match[1] : value.trim();
-        setFormData(prev => ({ ...prev, map_embed: url }));
-        return;
-    }
 
     if (name === 'type') {
       setFormData(prev => ({
@@ -921,16 +913,17 @@ const ListingForm: React.FC = () => {
         </div>
       </div>
 
-       {/* Map Embed URL */}
+       {/* Map Embed Code */}
        <div>
-        <label htmlFor="map_embed" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Map Embed URL</label>
-        <input 
+        <label htmlFor="map_embed" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Map Embed Code</label>
+        <textarea 
             id="map_embed" 
             name="map_embed" 
-            placeholder="Paste Google Maps URL or full <iframe> code" 
+            placeholder="Paste the full <iframe> code from Google Maps" 
             value={formData.map_embed} 
             onChange={handleChange} 
-            className={`${inputStyles} font-mono text-sm`} 
+            className={`${inputStyles} font-mono text-sm h-24`} 
+            rows={3}
         />
       </div>
       
